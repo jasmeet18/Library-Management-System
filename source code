@@ -1,0 +1,220 @@
+Here is the input and output of the code. 
+The code implements a simple library management system using C++. The system allows librarians to manage books, to issue and return books . Input and Output
+
+
+INPUT
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Book {
+    string isbn, title, author, edition, publication;
+    bool isIssued;
+public:
+    Book() : isIssued(false) {}
+
+    void setDetails(string a, string b, string c, string d, string e) {
+        isbn = a;
+        title = b;
+        author = c;
+        edition = d;
+        publication = e;
+    }
+
+    void issueBook() { isIssued = true; }
+    void returnBook() { isIssued = false; }
+
+    string getIsbn() const { return isbn; }
+    string getTitle() const { return title; }
+    string getAuthor() const { return author; }
+    string getEdition() const { return edition; }
+    string getPublication() const { return publication; }
+    bool getIsIssued() const { return isIssued; }
+
+    void displayBook() const {
+        cout << left << setw(15) << isbn 
+             << setw(30) << title 
+             << setw(20) << author 
+             << setw(10) << edition 
+             << setw(20) << publication 
+             << setw(10) << (isIssued ? "Issued" : "Available") << endl;
+    }
+};
+
+vector<Book> books;
+
+void displayMenu();
+void addBook();
+void deleteBook();
+void issueBook();
+void returnBook();
+void listBooks();
+void searchBook();
+void exitSystem();
+
+int main() {
+    cout << "***************" << endl;
+    cout << "*                                         *" << endl;
+    cout << "*      WELCOME TO THE LIBRARY SYSTEM      *" << endl;
+    cout << "*                                         *" << endl;
+    cout << "***************" << endl;
+
+    while (true) {
+        displayMenu();
+
+        int choice;
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+        cin.ignore();  // Ignore the newline character left in the buffer
+
+        switch (choice) {
+            case 1: addBook(); break;
+            case 2: deleteBook(); break;
+            case 3: issueBook(); break;
+            case 4: returnBook(); break;
+            case 5: listBooks(); break;
+            case 6: searchBook(); break;
+            case 7: exitSystem(); return 0;
+            default: cout << "Invalid choice. Please try again.\n";
+        }
+    }
+
+    return 0;
+}
+
+void displayMenu() {
+    cout << "\n======================== MENU ========================" << endl;
+    cout << "1. Add Book" << endl;
+    cout << "2. Delete Book" << endl;
+    cout << "3. Issue Book" << endl;
+    cout << "4. Return Book" << endl;
+    cout << "5. List All Books" << endl;
+    cout << "6. Search Book" << endl;
+    cout << "7. Exit" << endl;
+    cout << "======================================================" << endl;
+}
+
+void addBook() {
+    Book book;
+    string isbn, title, author, edition, publication;
+
+    cout << "Enter ISBN: ";
+    getline(cin, isbn);
+    cout << "Enter Title: ";
+    getline(cin, title);
+    cout << "Enter Author: ";
+    getline(cin, author);
+    cout << "Enter Edition: ";
+    getline(cin, edition);
+    cout << "Enter Publication: ";
+    getline(cin, publication);
+
+    book.setDetails(isbn, title, author, edition, publication);
+    books.push_back(book);
+
+    cout << "\nBook added successfully!\n";
+}
+
+void deleteBook() {
+    string isbn;
+    cout << "Enter ISBN of the book to delete: ";
+    getline(cin, isbn);
+
+    for (auto it = books.begin(); it != books.end(); ++it) {
+        if (it->getIsbn() == isbn) {
+            books.erase(it);
+            cout << "Book deleted successfully!\n";
+            return;
+        }
+    }
+    cout << "Book not found!\n";
+}
+
+void issueBook() {
+    string isbn;
+    cout << "Enter ISBN of the book to issue: ";
+    getline(cin, isbn);
+
+    for (auto &book : books) {
+        if (book.getIsbn() == isbn) {
+            if (book.getIsIssued()) {
+                cout << "Book is already issued!\n";
+                return;
+            }
+            book.issueBook();
+            cout << "Book issued successfully!\n";
+            return;
+        }
+    }
+    cout << "Book not found!\n";
+}
+
+void returnBook() {
+    string isbn;
+    cout << "Enter ISBN of the book to return: ";
+    getline(cin, isbn);
+
+    for (auto &book : books) {
+        if (book.getIsbn() == isbn) {
+            if (!book.getIsIssued()) {
+                cout << "Book was not issued!\n";
+                return;
+            }
+            book.returnBook();
+            cout << "Book returned successfully!\n";
+            return;
+        }
+    }
+    cout << "Book not found!\n";
+}
+
+void listBooks() {
+    if (books.empty()) {
+        cout << "No books available.\n";
+        return;
+    }
+
+    cout << left << setw(15) << "ISBN" 
+         << setw(30) << "Title" 
+         << setw(20) << "Author" 
+         << setw(10) << "Edition" 
+         << setw(20) << "Publication" 
+         << setw(10) << "Status" << endl;
+
+    for (const auto &book : books) {
+        book.displayBook();
+    }
+}
+
+void searchBook() {
+    string isbn;
+    cout << "Enter ISBN of the book to search: ";
+    getline(cin, isbn);
+
+    for (const auto &book : books) {
+        if (book.getIsbn() == isbn) {
+            cout << left << setw(15) << "ISBN" 
+                 << setw(30) << "Title" 
+                 << setw(20) << "Author" 
+                 << setw(10) << "Edition" 
+                 << setw(20) << "Publication" 
+                 << setw(10) << "Status" << endl;
+            book.displayBook();
+            return;
+        }
+    }
+    cout << "Book not found!\n";
+}
+
+void exitSystem() {
+    cout << "***************" << endl;
+    cout << "*                                         *" << endl;
+    cout << "*        THANK YOU FOR USING THE          *" << endl;
+    cout << "*       LIBRARY MANAGEMENT SYSTEM         *" << endl;
+    cout << "*                                         *" << endl;
+    cout << "***************" << endl;
+    exit(0);
+}
